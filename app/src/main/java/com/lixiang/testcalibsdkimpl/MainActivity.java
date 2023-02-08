@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.lixiang.svmclientsdk.SvmCalibClientImpl;
+import com.lixiang.svmclientsdk.SvmCalibClientImpl.OnServiceStateChangedListener;
+import com.lixiang.svmclientsdk.SvmCalibClientImpl.OnCalibrationChangedListener;
 
 public class MainActivity extends AppCompatActivity {
     private SvmCalibClientImpl m_CalibService;
@@ -20,34 +22,50 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         m_CalibService = new SvmCalibClientImpl(this);
-        m_CalibService.setOnServiceStateChangedListener(new SvmCalibClientImpl.OnServiceStateChangedListener() {
-            @Override
-            public void onServiceConnected(boolean connected) {
-                Log.i(TAG, "标定服务连接上!");
-            }
-        });
-        m_CalibService.setOnCalibrationChangedListener(new SvmCalibClientImpl.OnCalibrationChangedListener() {
-            @Override
-            public void onCalibrationStateChanged(int i) {
-                Log.i(TAG, "收到标定的结果为" + i );
-            }
-
-            @Override
-            public void onCalibrationButtonClicked(boolean b) {
-                //Do nothing
-            }
-
-            @Override
-            public void onUploadStateChanged(int i) {
-                Log.i(TAG, "标定上传结果" + i );
-            }
-
-            @Override
-            public void onDownloadStateChanged(int i) {
-                Log.i(TAG, "标定下载结果" + i );
-            }
-        });
     }
+
+
+    /** SVM Service Connect listener */
+    private class MyServiceStateListener implements OnServiceStateChangedListener  {
+        @Override
+        public void onServiceConnected( boolean connected )  {
+            Log.i( TAG, "onServiceConnected, connected: " + connected );
+        }
+    }
+    /** SVM calibration result listener */
+    private class MyCalibrationListener implements OnCalibrationChangedListener  {
+        /** calibration callback */
+        @Override
+        public void onCalibrationStateChanged( int state )
+        {
+            Log.i( TAG, "onCalibrationStateChanged, state: " + state);
+            // try wake waiting thread of executing request
+        }
+
+        /** calibration data download callback */
+        @Override
+        public void onUploadStateChanged( int state )
+        {
+            Log.i( TAG, "onUploadStateChanged, state: " + state );
+            // try wake waiting thread of executing request
+        }
+
+        /** calibration data download callback */
+        @Override
+        public void onDownloadStateChanged( int state )
+        {
+            Log.i( TAG, "onDownloadStateChanged, state: " + state );
+            // try wake waiting thread of executing request
+        }
+
+        @Override
+        public void onCalibrationButtonClicked( boolean isConfirm )
+        {
+            // do noth.
+        }
+    }
+
+
 
     /** 按钮的实现部分*/
     public void click_upload(View v) throws RemoteException {
