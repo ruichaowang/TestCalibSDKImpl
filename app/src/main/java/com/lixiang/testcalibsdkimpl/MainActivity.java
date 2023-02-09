@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         m_CalibService = new SvmCalibClientImpl(this);
+        m_CalibService.setOnServiceStateChangedListener(new MyServiceStateListener());
+        m_CalibService.setOnCalibrationChangedListener(new MyCalibrationListener());
     }
 
 
