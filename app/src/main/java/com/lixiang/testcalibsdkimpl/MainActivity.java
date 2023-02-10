@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i( TAG, "onCreate"  );
         m_CalibService = new SvmCalibClientImpl(this);
         m_CalibService.setOnServiceStateChangedListener(new MyServiceStateListener());
         m_CalibService.setOnCalibrationChangedListener(new MyCalibrationListener());
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private class MyServiceStateListener implements OnServiceStateChangedListener  {
         @Override
         public void onServiceConnected( boolean connected )  {
-            Log.i( TAG, "标定程序链接: " + connected );
+            Log.i( TAG, "onServiceConnected:" + connected );
             mSVMAvailable.set( connected );
         }
     }
