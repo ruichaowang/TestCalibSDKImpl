@@ -12,9 +12,12 @@ import com.lixiang.svmclientsdk.SvmCalibClientImpl;
 import com.lixiang.svmclientsdk.SvmCalibClientImpl.OnServiceStateChangedListener;
 import com.lixiang.svmclientsdk.SvmCalibClientImpl.OnCalibrationChangedListener;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class MainActivity extends AppCompatActivity {
     private SvmCalibClientImpl m_CalibService;
     private static final String TAG = "模拟诊断 app";
+    private AtomicBoolean mSVMAvailable = new AtomicBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private class MyServiceStateListener implements OnServiceStateChangedListener  {
         @Override
         public void onServiceConnected( boolean connected )  {
-            Log.i( TAG, "onServiceConnected, connected: " + connected );
+            Log.i( TAG, "标定程序链接: " + connected );
+            mSVMAvailable.set( connected );
         }
     }
     /** SVM calibration result listener */
@@ -61,9 +65,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onCalibrationButtonClicked( boolean isConfirm )
-        {
-            // do noth.
+        public void onCalibrationButtonClicked( boolean isConfirm )  {
+            Log.i( TAG, "点击了取消按钮: " + isConfirm );
         }
     }
 
@@ -83,19 +86,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void click_calib_2(View v) throws RemoteException {
-        Log.i(TAG, "点击悬架 2 标定 按钮");
         Toast.makeText(getApplicationContext(), "点击悬架 2 标定按钮", Toast.LENGTH_LONG) .show();
         m_CalibService.openCalibrationView(2);
     }
 
     public void click_calib_3(View v) throws RemoteException {
-        Log.i(TAG, "点击悬架 3 标定 按钮");
         Toast.makeText(getApplicationContext(), "点击悬架 3 标定按钮", Toast.LENGTH_LONG) .show();
-        m_CalibService.openCalibrationView(3);
+
+        if (!mSVMAvailable.get()) {
+            Log.w( TAG, "return because SVM is unvailable" );
+        } else {
+            m_CalibService.openCalibrationView(3);
+        }
+
     }
 
     public void click_calib_4(View v) throws RemoteException {
-        Log.i(TAG, "点击悬架 4 标定 按钮");
         Toast.makeText(getApplicationContext(), "点击悬架 4 标定按钮", Toast.LENGTH_LONG) .show();
         m_CalibService.openCalibrationView(4);
     }
